@@ -257,7 +257,10 @@ const GWASUIApp = (props) => {
   }, []);
 
   const CohortDefinitions = () => {
-    const { data, status } = useQuery('cohortdefinitions', fetchCohortDefinitions);
+    const { data, status } = useQuery(['cohortdefinitions', sourceId], fetchCohortDefinitions, {
+	    refetchOnMount: false,
+	    refetchOnWindowFocus: false,
+	    refetchOnReconnect: false});
 
     if (status === 'loading') {
       return <React.Fragment>Loading</React.Fragment>;
@@ -285,7 +288,10 @@ const GWASUIApp = (props) => {
   };
 
   const CohortConcepts = () => {
-    const { data, status } = useQuery('cohortconcepts', fetchConcepts);
+    const { data, status } = useQuery(['cohortconcepts', sourceId], fetchConcepts, {
+	    refetchOnMount: false,
+	    refetchOnWindowFocus: false,
+	    refetchOnReconnect: false});
 
     if (status === 'loading') {
       return <React.Fragment>Loading</React.Fragment>;
@@ -312,7 +318,10 @@ const GWASUIApp = (props) => {
   };
 
   const CohortConceptStats = () => {
-    const { data, status } = useQuery('cohortstats', fetchConceptStats);
+    const { data, status } = useQuery(['cohortstats', selectedConcepts], fetchConceptStats, {
+	    refetchOnMount: false,
+	    refetchOnWindowFocus: false,
+	    refetchOnReconnect: false});
 
     if (status === 'loading') {
       return <React.Fragment>Loading</React.Fragment>;
