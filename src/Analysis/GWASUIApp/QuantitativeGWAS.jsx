@@ -11,6 +11,7 @@ import { headers } from '../../configs';
 import { gwasWorkflowPath, cohortMiddlewarePath, wtsPath } from '../../localconf';
 import { fetchWithCreds } from '../../actions';
 import Spinner from '../../components/Spinner';
+import QuantTourButton from './QuantTourButton';
 
 const { Step } = Steps;
 
@@ -286,7 +287,7 @@ const QuantitativeGWAS = (props) => {
     return (
       <React.Fragment>
         <Space direction={'vertical'} align={'center'} style={{ width: '100%' }}>
-          <h4 className='GWASUI-selectInstruction'>In this step, you will determine the study population. To begin, select the cohort that you would like to define your study population with.</h4>
+          <h4 className='GWASUI-selectInstruction' data-tour="quant-step-1-cohort-selection">In this step, you will determine the study population. To begin, select the cohort that you would like to define your study population with.</h4>
           <Popover content={newCohortContent} title='Create a new cohort'>
             <InfoCircleOutlined />
           </Popover>
@@ -375,7 +376,7 @@ const QuantitativeGWAS = (props) => {
         <Popover content={chooseVarContent} title='Choosing Variables'>
           <InfoCircleOutlined />
         </Popover>
-        <h4 className='GWASUI-selectInstruction'>In this step, you will select the harmonized variables for your study. Please select all variables you wish to use in your model, including both covariates and phenotype. (Note: population PCs are not included in this step)</h4>
+        <h4 className='GWASUI-selectInstruction' data-tour="quant-step-2-choosing-variable">In this step, you will select the harmonized variables for your study. Please select all variables you wish to use in your model, including both covariates and phenotype. (Note: population PCs are not included in this step)</h4>
 
         <input placeholder="Filter options by name"  />
         <div className='GWASUI-mainTable'>
@@ -413,7 +414,7 @@ const QuantitativeGWAS = (props) => {
         <Popover content={choosePhenoContent} title='Choosing Phenotype'>
           <InfoCircleOutlined />
         </Popover>
-        <h4 className='GWASUI-selectInstruction'>In this Step, you will determine your phenotype, using the selected variables from Step 2. Please choose one of the selected variables to be the study’s phenotype.</h4>
+        <h4 className='GWASUI-selectInstruction' data-tour="step-3-choosing-phenotype">In this Step, you will determine your phenotype, using the selected variables from Step 2. Please choose one of the selected variables to be the study’s phenotype.</h4>
         <div className='GWASUI-mainTable'>
           <Table
             className='GWASUI-table3'
@@ -630,20 +631,36 @@ const QuantitativeGWAS = (props) => {
   };
 
   const generateContentForStep = (stepIndex) => {
+    let stepInfo = {
+      step: stepIndex,
+      workflow_type: "quantitative"
+    }
     switch (stepIndex) {
       case 0: {
         return (
-          sourceId ? <CohortDefinitions /> : null
+          sourceId ? <div><CohortDefinitions />
+                          <QuantTourButton stepInfo={stepInfo}>
+                          </QuantTourButton>
+                      </div> : null
         );
       }
       case 1: {
         return (
-          <Covariates />
+          <div>
+            <Covariates />
+            <QuantTourButton stepInfo={stepInfo}>
+            </QuantTourButton>
+          </div>
         );
       }
       case 2: {
         return (
-          <CovariateStats />
+
+          <div>
+            <CovariateStats />
+            <QuantTourButton stepInfo={stepInfo}>
+            </QuantTourButton>
+          </div>
         );
       }
       case 3: {
@@ -681,6 +698,7 @@ const QuantitativeGWAS = (props) => {
                                     <InfoCircleOutlined />
                                 </Popover> */}
                 <Form.Item
+                  data-tour="step-4-number-of-pcs"
                   label='Number of PCs to use'
                   name='numOfPC'
                   rules={[
@@ -694,6 +712,7 @@ const QuantitativeGWAS = (props) => {
                     onChange={(e) => setNumOfPC(e)}/>
                 </Form.Item>
                 <Form.Item
+                  data-tour="step-4-covariates"
                   label='Covariates'
                   name='covariates'
                 >
@@ -706,6 +725,7 @@ const QuantitativeGWAS = (props) => {
                   />
                 </Form.Item>
                 <Form.Item
+                  data-tour="step-4-phenotype"
                   label='Phenotype'
                   name='outcome'
                 >
@@ -716,6 +736,7 @@ const QuantitativeGWAS = (props) => {
                   />
                 </Form.Item>
                 <Form.Item
+                  data-tour="step-4-hare"
                   label='Select HARE group'
                   name='hareGroup'
                   rules={[
@@ -726,20 +747,24 @@ const QuantitativeGWAS = (props) => {
                   <ConceptStatsByHare />
                 </Form.Item>
                 <Form.Item
+                  data-tour="step-4-maf-cutoff"
                   label='MAF Cutoff'
                   name='mafCutoff'
                 >
                   <InputNumber value={mafThreshold} onChange={(e) => setMafThreshold(e)} stringMode step='0.01' min={'0'} max={'0.5'} />
                 </Form.Item>
                 <Form.Item
+                  data-tour="step-4-imputation-score"
                   label='Imputation Score Cutoff'
                   name='imputationCutoff'
                 >
                   <InputNumber value={imputationScore} onChange={(e) => setImputationScore(e)} stringMode step='0.1' min={'0'} max={'1'} />
                 </Form.Item>
               </Form>
+              <QuantTourButton stepInfo={stepInfo}></QuantTourButton>
             </div>
           </Space>
+
         );
       }
       case 4: {

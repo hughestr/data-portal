@@ -11,6 +11,7 @@ import { fetchWithCreds } from '../../actions';
 import Spinner from "../../components/Spinner";
 import Dropdown from '@gen3/ui-component/dist/components/Dropdown';
 import CheckOutlined from '@ant-design/icons';
+import TourButton from './TourButton';
 
 // the quantitative argo id is
 // gwas-template-wrapper-k5w9t and the tar GUID is dg.VA03/7484ce92-313b-4286-954c-b71ad5d9bf54
@@ -208,7 +209,7 @@ const CaseControlGWAS = (props) => {
         }
         return (
             <React.Fragment>
-                <h4 className="GWASUI-selectInstruction">In this step, you will begin to define the study population. To begin, select the cohort that you would like to define as your study “cases” population.</h4>
+                <h4 className="GWASUI-selectInstruction" data-tour="step-1-cohort-selection">In this step, you will begin to define the study population. To begin, select the cohort that you would like to define as your study “cases” population.</h4>
                 <Space direction={'vertical'} align={'center'} style={{ width: '100%' }}>
                     <div className='GWASUI-mainTable'>
                         <Table
@@ -251,6 +252,7 @@ const CaseControlGWAS = (props) => {
                             dataSource={data.cohort_definitions_and_stats.filter((x) => x.size > 0)} // many entries w/ size 0 in prod
                         />
                     </div>
+
                 </Space>
             </React.Fragment>
         );
@@ -260,7 +262,7 @@ const CaseControlGWAS = (props) => {
         const { data, status } = useQuery(['covariates', allowedConceptTypes.ConceptTypes, sourceId], fetchCovariates, queryConfig);
 
         if (status === 'loading') {
-            return <Spinner />;
+               return <Spinner />
         }
         if (status === 'error') {
             return <React.Fragment>Error</React.Fragment>;
@@ -271,7 +273,7 @@ const CaseControlGWAS = (props) => {
         }
         return (
             <Space direction={'vertical'} align={'center'} style={{ width: '100%' }}>
-                <h4 className='GWASUI-selectInstruction'>In this step, you will select covariates for your study. Please choose any of the harmonized variables.</h4>
+                <h4 className='GWASUI-selectInstruction' data-tour="step-3-choosing-variable">In this step, you will select covariates for your study. Please choose any of the harmonized variables.</h4>
                 <div className='GWASUI-mainTable'>
                     <Table
                         className='GWASUI-table2'
@@ -633,6 +635,7 @@ const CaseControlGWAS = (props) => {
                         autoComplete='off'
                     >
                         <Form.Item
+                            data-tour="step-5-number-of-pcs"
                             label='Number of PCs to use'
                             name='numOfPC'
                             rules={[
@@ -646,6 +649,7 @@ const CaseControlGWAS = (props) => {
                               onChange={(e) => setNumOfPC(e)}/>
                         </Form.Item>
                         <Form.Item
+                            data-tour="step-5-covariates"
                             label='Covariates'
                             name='covariates'
                         >
@@ -658,6 +662,7 @@ const CaseControlGWAS = (props) => {
                             />
                         </Form.Item>
                         <Form.Item
+                            data-tour="step-5-hare"
                             label='Select HARE group'
                             name='hareGroup'
                             rules={[
@@ -668,12 +673,14 @@ const CaseControlGWAS = (props) => {
                             <ConceptsStatsByHare />
                         </Form.Item>
                         <Form.Item
+                            data-tour="step-5-maf-cutoff"
                             label='MAF Cutoff'
                             name='mafCutoff'
                         >
                             <InputNumber value={mafThreshold} onChange={(e) => setMafThreshold(e)} stringMode step='0.01' min={'0'} max={'0.5'} />
                         </Form.Item>
                         <Form.Item
+                            data-tour="step-5-imputation-score"
                             label='Imputation Score Cutoff'
                             name='imputationCutoff'
                         >
@@ -779,7 +786,13 @@ const CaseControlGWAS = (props) => {
         </React.Fragment>)
     }
 
+
+
     const generateContentForStep = (stepIndex) => {
+        let stepInfo = {
+            step: stepIndex,
+            workflow_type: "case control"
+        }
         switch (stepIndex) {
             case 0: {
                 return (
@@ -796,18 +809,22 @@ const CaseControlGWAS = (props) => {
                             <div className="GWASUI-flexCol">
                                 <CaseCohortDefinition></CaseCohortDefinition>
                             </div>
+                            <TourButton stepInfo={stepInfo}></TourButton>
                         </div>
                     ) : <Spinner></Spinner>
                 );
             }
             case 1: {
                 return (
-                    <ControlCohortDefinition></ControlCohortDefinition>
+                        <ControlCohortDefinition></ControlCohortDefinition>
                 );
             }
             case 2: {
                 return (
-                    <Covariates></Covariates>
+                    <div>
+                        <Covariates></Covariates>
+                        <TourButton stepInfo={stepInfo}></TourButton>
+                    </div>
                 );
             }
             case 3: {
@@ -817,7 +834,10 @@ const CaseControlGWAS = (props) => {
             }
             case 4: {
                 return (
-                    <CohortParameters></CohortParameters>
+                    <div>
+                        <CohortParameters></CohortParameters>
+                        <TourButton stepInfo={stepInfo}></TourButton>
+                    </div>
                 );
             }
             case 5: {

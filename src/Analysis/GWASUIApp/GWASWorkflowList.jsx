@@ -33,7 +33,7 @@ const GWASWorkflowList = ({ refreshWorkflows }) => {
     return (
       <React.Fragment>
         <Collapse onClick={(event) => event.stopPropagation()}>
-          <Panel header='Submitted Job Statuses' key='1'>
+          <Panel header='Submitted Job Statuses' key='1' >
             <List
               className='GWASApp__jobStatusList'
               itemLayout='horizontal'
